@@ -1,10 +1,11 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import fetch from "node-fetch";
 import dotenv from "dotenv";
 dotenv.config();
+
 const API_KEY = process.env.OPENAI_API_KEY;
-console.log("API_KEY:", API_KEY);
 
 // Node.jsの標準モジュールでディレクトリ取得
 const __filename = fileURLToPath(import.meta.url);
@@ -17,8 +18,9 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 // "/" にアクセスが来たら index.html を返す
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
+
 
 
 // ✅ フロントから呼び出すAPIエンドポイント
