@@ -59,8 +59,8 @@ const questions = [
   },
   { 
     id: "date", 
-    question: "日付・時刻を扱う（フォーマット、未来・過去制限）",
-    consideration: "存在しない日付を入れた場合の考慮はできているか, 開始日＞終了日の逆転の考慮はできているか, 閏年の扱い"
+    question: "日付・時刻を扱う",
+    consideration: "存在しない日付を入れた場合の考慮はできているか, 開始日＞終了日の逆転の考慮はできているか, 閏年の扱い, 日付表示のフォーマットはサービスないで統一されているか"
   },
   { 
     id: "required", 
@@ -159,13 +159,8 @@ const questions = [
     let final_text = `${format_text} ${response_mail_text} ${selectedOptionsText} 以下は、他の機能のテスト項目でこんな感じを参考にして書いても大丈夫です。 ${selectedFileText}`;
     
     let response_data = await getChatGptResponse(final_text);
-
-
     resultElement.textContent = response_data;
     let csv_text = extractCsv(response_data);
-
-
-
 
     if (!csv_text) return alert("CSVデータが見つかりません。");
     const blob = new Blob([csv_text], { type: 'text/csv;charset=utf-8;' });
