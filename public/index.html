@@ -10,6 +10,10 @@
     .min-h200 {
       min-height: 200px;
     }
+    textarea::placeholder {
+      color: #999; /* 任意の色 */
+      opacity: 1;  /* ブラウザによって薄くなるのを防ぐ */
+    }
   </style>
 </head>
 <body>
@@ -18,7 +22,7 @@
       <form id="form" class="mb24">
         <div class="bold fs20 mb24">テスト項目の叩き台を作ろう(Jrエンジニア推奨)</div>
         <div class="mb28">
-          <div class="bold mb6">🎲どのモデルで叩き台を作りますか？</div>
+          <div class="bold mb6">🎲モデルを選択してください</div>
           <select id="model-select" class="w200 border ronded-4 p4 lh12 mb4">
             <option value="gpt-4o-mini">gpt-4o-mini</option>
             <option value="gpt-5">gpt-5</option>
@@ -27,8 +31,23 @@
         </div>
         <div class="mb28">
           <div class="mb6 bold">🦄今回テストするのは、どのような機能ですか？</div>
-            <textarea id="textarea" class="w-full h128 border" required></textarea>
+          <textarea id="textarea" class="w-full h128 border border-black p6" required placeholder="点検結果ページを作りました。点検結果は、数値の入力、文字列の自由入力があります。添付資料登録があります。ページの機能としては、新規作成、編集です。"></textarea>
+        </div>
+        <div class="mb28">
+          <div class="bold mb6">どちらの観点を重視しますか</div>
+          <select id="side-select" class="w200 border ronded-4 p4 lh12 mb4">
+            <option value="frontend">フロントエンド(画面)</option>
+            <option value="backend">バックエンド</option>
+          </select>
+        </div>
+        <!-- <div class="mb28">
+          <div class="mb6 bold">🍎UI画像があれば添付してください。</div>
+          <div id="image-preview"></div>
+          <div>
+            <input type="file" id="image-input" accept="image/*"/>
+            <div id="image-preview" class="mt12"></div>
           </div>
+        </div> -->
           <div class="mb28">
               <div class="bold mb6">🎅テスト項目作成に参考になるCSVファイルがあれば追加してください。</div>
               <div>

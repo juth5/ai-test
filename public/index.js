@@ -1,4 +1,5 @@
 let modelSelectElement = {};
+let imageUrl = '';
 
 document.addEventListener('DOMContentLoaded', () => {
   
@@ -10,14 +11,35 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedFileText = '';
   let overlayElement = document.getElementById("overlay");
   modelSelectElement = document.getElementById("model-select");
+  let sideSelectElement = document.getElementById("side-select");
+
+  //let imageInputElement = document.getElementById("image-input");
 
   fileInputElement.addEventListener("change", async (event) => {
       const file = event.target.files[0]; // 1つ目のファイルを取得
-
       if (!file) return; // 何も選ばれていないときは終了
-
       selectedFileText = await file.text(); // ← 中身を文字列として取得！
   });
+
+  // imageInputElement.addEventListener("change", (event) => {
+  //   const file = event.target.files[0];
+  //   if (!file) return;
+    
+  //   const reader = new FileReader();
+  //   reader.onload = (e) => {
+  //     const img = document.createElement("img");
+  //     img.src = e.target.result;
+  //     imageUrl = e.target.result;
+
+  //     img.style.maxWidth = "300px";
+  //     img.style.maxHeight = "300px";
+      
+  //     const previewContainer = document.getElementById("image-preview");
+  //     previewContainer.innerHTML = ""; // 既存のプレビューをクリア
+  //     previewContainer.appendChild(img); // 新しい画像を追加
+  //   };
+  //   reader.readAsDataURL(file);
+  // });
 
 
 //考慮事項を入れる
@@ -145,6 +167,7 @@ const questions = [
     overlayElement.classList.add("show");
 
     let response_mail_text = textareaElement.value;
+    let side = sideSelectElement.value;
 
     //チェックボックスの値を配列に格納
     let check_box_options = [];
@@ -155,8 +178,8 @@ const questions = [
     });
 
     let selectedOptionsText = check_box_options.join('、'); // ← 日本語の読点で区切る
-    let format_text = '以下のテキスト内容を汲み取って、ソフトウェアの単体と結合レベルのテスト項目を書いてください。こういう機能があれば、こういう観点のテストが必要なはずだという憶測、一般的な観点、まは見落としがちなことを書いてください。例えば、数値を扱う時に0をfalseとして判定していないかなどです。回答はCSV形式で返してください。ヘッダーは  ["テスト項目", "入力条件", "期待する結果"],です。回答は、```csv と ``` で囲んでください。';
-    let final_text = `${format_text} ${response_mail_text} ${selectedOptionsText} 以下は、他の機能のテスト項目でこんな感じを参考にして書いても大丈夫です。 ${selectedFileText}`;
+    let format_text = '以下のテキスト内容を汲み取って、ソフトウェアの単体のような結合レベルのテスト項目を書いてください。こういう機能があれば、こういう観点のテストが必要なはずだという一般的な観点で書いてください。また、見落としがちなことを書いてください。例えば、数値を扱う時に0をfalseとして判定していないかなどです。回答はCSV形式で返してください。ヘッダーは  ["テスト項目", "入力条件", "期待する結果"],です。回答は、```csv と ``` で囲んでください。';
+    let final_text = `${format_text} ${side}の観点を重視して回答してください。多くても30項目くらいでお願いします。 ${response_mail_text} ${selectedOptionsText} 以下は、他の機能のテスト項目でこんな感じを参考にして書いても大丈夫です。 ${selectedFileText}`;
     
     let response_data = await getChatGptResponse(final_text);
     resultElement.textContent = response_data;
