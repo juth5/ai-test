@@ -173,8 +173,8 @@ const questions = [
     });
 
     let selectedOptionsText = check_box_options.join('、'); // ← 日本語の読点で区切る
-    let format_text = '以下のテキスト内容を汲み取って、ソフトウェアの単体,結合のテスト項目を書いてください。こういう機能があれば、こういう観点のテストが必要なはずだという一般的な観点で書いてください。例えば、数値を扱う時に0をfalseとして判定していないかなどです。回答はCSV形式で返してください。ヘッダーは  ["テスト項目", "入力条件", "期待する結果"],です。回答は、```csv と ``` で囲んでください。';
-    let final_text = `${format_text} ${side}の観点を重視して回答してください。多くても30項目くらいでお願いします。 ${response_mail_text} ${selectedOptionsText} 以下は、他の機能のテスト項目でこんな感じを参考にして書いても大丈夫です。 ${selectedFileText}`;
+    let format_text = '以下のテキスト内容を汲み取って、ソフトウェアの単体,結合のテスト項目を書いてください。こういう機能があれば、こういう観点のテストが必要なはずだという一般的な観点で書いてください。見落としがちなあるあるネタがあるといいです。例えば、数値を扱う時に0をfalseとして判定していないかなどです。回答はCSV形式で返してください。ヘッダーは  ["テスト項目", "入力条件", "期待する結果"],です。回答は、```csv と ``` で囲んでください。';
+    let final_text = `${format_text} 今回は${side}の観点を重視して回答してください。多くても30項目くらいでお願いします。 以下は、ユーザーが今回のテストについて記載した情報です。以下の情報から推測して書いてください。${response_mail_text} ${selectedOptionsText}`;
     
     try {
       let response_data = await getChatGptResponse(final_text);
@@ -201,10 +201,7 @@ const questions = [
     finally {
       closeLoadingModal(overlayElement);
     }
-
-
   });
-
 });
 
 
@@ -242,5 +239,3 @@ let closeLoadingModal = (overlayElement) => {
     overlayElement.classList.remove("show");
     overlayElement.classList.add("hide");
 }
-
-
