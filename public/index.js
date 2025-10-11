@@ -15,11 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   //let imageInputElement = document.getElementById("image-input");
 
-  fileInputElement.addEventListener("change", async (event) => {
-      const file = event.target.files[0]; // 1つ目のファイルを取得
-      if (!file) return; // 何も選ばれていないときは終了
-      selectedFileText = await file.text(); // ← 中身を文字列として取得！
-  });
+  // fileInputElement.addEventListener("change", async (event) => {
+  //   const file = event.target.files[0]; // 1つ目のファイルを取得
+  //   if (!file) return; // 何も選ばれていないときは終了
+  //   selectedFileText = await file.text(); // ← 中身を文字列として取得！
+  // });
 
   // imageInputElement.addEventListener("change", (event) => {
   //   const file = event.target.files[0];
@@ -156,15 +156,10 @@ const questions = [
 
   });
 
-
-
-
-  
-
+  //フォーム送信時の処理
   formElement.addEventListener('submit', async (event) => {
     event.preventDefault();
-    overlayElement.classList.remove("hide");
-    overlayElement.classList.add("show");
+    openLoadingModal(overlayElement);
 
     let response_mail_text = textareaElement.value;
     let side = sideSelectElement.value;
@@ -178,48 +173,74 @@ const questions = [
     });
 
     let selectedOptionsText = check_box_options.join('、'); // ← 日本語の読点で区切る
-    let format_text = '以下のテキスト内容を汲み取って、ソフトウェアの単体のような結合レベルのテスト項目を書いてください。こういう機能があれば、こういう観点のテストが必要なはずだという一般的な観点で書いてください。また、見落としがちなことを書いてください。例えば、数値を扱う時に0をfalseとして判定していないかなどです。回答はCSV形式で返してください。ヘッダーは  ["テスト項目", "入力条件", "期待する結果"],です。回答は、```csv と ``` で囲んでください。';
+    let format_text = '以下のテキスト内容を汲み取って、ソフトウェアの単体,結合のテスト項目を書いてください。こういう機能があれば、こういう観点のテストが必要なはずだという一般的な観点で書いてください。例えば、数値を扱う時に0をfalseとして判定していないかなどです。回答はCSV形式で返してください。ヘッダーは  ["テスト項目", "入力条件", "期待する結果"],です。回答は、```csv と ``` で囲んでください。';
     let final_text = `${format_text} ${side}の観点を重視して回答してください。多くても30項目くらいでお願いします。 ${response_mail_text} ${selectedOptionsText} 以下は、他の機能のテスト項目でこんな感じを参考にして書いても大丈夫です。 ${selectedFileText}`;
     
-    let response_data = await getChatGptResponse(final_text);
-    resultElement.textContent = response_data;
-    let csv_text = extractCsv(response_data);
+    try {
+      let response_data = await getChatGptResponse(final_text);
+      let csv_text = getExtractCsv(response_data);
+      
+      if (!csv_text) {
+        resultElement.textContent = response_data;
+        alert("CSV形式の回答が取得できませんでしたが、出力結果には反映されました。");
+      }
+      else {
+        resultElement.textContent = response_data;
+        const blob = new Blob([csv_text], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'test_cases.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (e) {
+      alert(e.message);
+      console.error("Error logging final_text:", e);
+    }
+    finally {
+      closeLoadingModal(overlayElement);
+    }
 
-    if (!csv_text) return alert("CSVデータが見つかりません。");
-    const blob = new Blob([csv_text], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'test_cases.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-    overlayElement.classList.remove("show");
-    overlayElement.classList.add("hide");
+
   });
+
 });
 
 
 let getChatGptResponse = async (final_text) => {
   let model = modelSelectElement.value;
-  
-  const res = await fetch("/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text: final_text, model: model }),
-  });
-  const data = await res.json();
-  const message = data.reply || "（応答を取得できませんでした）";
-
-  return message;
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: final_text, model: model }),
+    });
+    const data = await res.json();
+    const message = data.reply || "（応答を取得できませんでした）";
+    return message;
+  }
+  catch (error) {
+    console.error(error);
+    throw new Error("サーバー側でエラーが発生しました。");
+  }
 };
 
-let extractCsv = (md) => {
+let getExtractCsv = (md) => {
   const m = md.match(/```csv\s*([\s\S]*?)```/i);
   return m ? m[1].trim() : null;
 };
 
+let openLoadingModal = (overlayElement) => {
+    overlayElement.classList.remove("hide");
+    overlayElement.classList.add("show");
+};
 
+let closeLoadingModal = (overlayElement) => {
+    overlayElement.classList.remove("show");
+    overlayElement.classList.add("hide");
+}
 
 

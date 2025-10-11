@@ -42,7 +42,7 @@ app.post("/api/chat", async (req, res) => {
 
     const data = await openaiRes.json();
 
-    const reply = data.choices?.[0]?.message?.content || "（応答を取得できませんでした）";
+    const reply = data.choices?.[0]?.message?.content || "応答を取得できませんでした。管理者にお問い合わせください。";
     res.json({ reply }); // フロントに返す
 
   } catch (error) {
