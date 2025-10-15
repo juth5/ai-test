@@ -41,11 +41,17 @@
             <option value="gpt-4o-mini">gpt-4o-mini</option>
             <option value="gpt-5">gpt-5</option>
           </select>
-          <div class="text-red fs12">※gpt-5は1日1回までしか選択しないでください。(お金がなくなってしまいます😖)</div>
+          <!-- <div class="text-red fs12">※gpt-5は1日1回までしか選択しないでください。(お金がなくなってしまいます😖)</div> -->
         </div>
         <div class="mb28">
           <div class="mb6 bold">🦄今回テストするのは、どのような機能ですか？</div>
-          <textarea id="textarea" class="w-full h128 border border-black p6" required placeholder="点検結果ページを作りました。点検結果は、数値の入力、文字列の自由入力があります。添付資料登録があります。ページの機能としては、新規作成、編集です。"></textarea>
+          <textarea id="textarea" class="w-full h128 border border-black p6 rounded-4" required placeholder="点検結果ページを作りました。点検結果は、数値の入力、文字列の自由入力があります。添付資料登録があります。ページの機能としては、新規作成、編集です。"></textarea>
+        </div>
+        <div class="mb28">
+          <div class="bold mb6">🧩上記で書いた機能の、正常系の代表的なテスト項目を書いてください。</div>
+          <input type="text" id="example-input" class="w-full border border-black p6 rounded-4" placeholder="例：URLパラメータのIDに対応するデータが正しく表示されること" />
+          <input type="text" id="example-input-2" class="w-full border border-black p6 rounded-4 mt12" placeholder="例：数値入力欄に数値を入力すると、保存できる" />
+          <input type="text" id="example-input-3" class="w-full border border-black p6 rounded-4 mt12" placeholder="例：日付をカレンダー機能で選択すると、保存できる" />
         </div>
         <div class="mb28">
           <div class="bold mb6">🎩どちらの観点を重視しますか</div>
@@ -71,20 +77,21 @@
           </div> -->
 
           <div class="mb28">
-            <div class="mb6 bold word-break-all">🧙‍♀️以下の質問に答えてください。</div>
+            <div class="bold word-break-all">🧙‍♀️以下の質問に答えてください。</div>
+            <div class="mb6 fs12 text-red">※項目が多い場合は複数回に分けて出力すると精度があがることがあります。一度の推奨チェック数は4〜5個です。</div>
             <div id="question-container">
 
             </div>
           </div>
           
           <button id="btn" class="button primary w128 mb4">出力</button>
-          <div class="fs12">CSVファイルとしてダウンロードされます。※出力には数十秒かかります。</div>
+          <div class="fs12">CSVファイルとしてダウンロードされます。※出力には1分程度かかります。</div>
       </form>
       <div class="bold mb6">出力結果</div>
       <div id="result" class="border min-h200 bw2 p10 word-break-all"></div>
     </div>
     <div class="absolute trbl0 bg-black opacity-50 hide" id="overlay">
-      <div class="absolute trbl0 text-white f fh fs20">AIが考え中です。数十秒かかることがあります。しばらくお待ちください。</div>
+      <div class="absolute trbl0 text-white f fh fs20">AIが考え中です。1分程度かかることがあります。しばらくお待ちください。</div>
       </div>
     </div>
   

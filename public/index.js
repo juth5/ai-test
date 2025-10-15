@@ -47,22 +47,22 @@ const questions = [
   { 
     id: "get", 
     question: "一覧・詳細表示などの取得処理がある(GET)", 
-    consideration: "0件の場合の考慮があるか（フロントエンド）, 件数が多い場合のスクロール考慮はあるか（フロントエンド）" 
+    consideration: "0件の場合の考慮があるか, 件数が多い場合のスクロール考慮はあるか" 
   },
   { 
     id: "insert", 
     question: "新規登録処理がある(Insert)",
-    consideration: "二重登録の防止（連打対策）は考慮されているか（フロントエンド）, 登録完了後の画面遷移は考慮されているか（フロントエンド）, トランザクションの適切な使用はされているか（バックエンド）"
+    consideration: "二重登録の防止（連打対策）は考慮されているか, 登録完了後の画面遷移は考慮されているか, トランザクションの適切な使用はされているか"
   },
   { 
     id: "update", 
     question: "更新処理がある(Update)",
-    consideration: "更新対象が見つからない場合の考慮はしているか（バックエンド）, 一時保存でその場にとどまる際、必要な変数は更新されているか（フロントエンド）, 更新後、再度続けて更新ができるか（フロントエンド）"
+    consideration: "更新対象が見つからない場合の考慮はしているか, 一時保存でその場にとどまる際、必要な変数は更新されているか, 更新後、再度続けて更新ができるか"
   },
   { 
     id: "delete", 
     question: "削除処理がある(Delete)",
-    consideration: "削除確認ダイアログを出しているか, 削除後のフィードバックを出しているか, 消すべきデータが完全に消えているか(バックエンド)"
+    consideration: "削除確認ダイアログを出しているか, 削除後のフィードバックを出しているか, 消すべきデータが完全に消えているか"
   },
   { 
     id: "bulk", 
@@ -166,21 +166,27 @@ const questions = [
 
     //チェックボックスの値を配列に格納
     let check_box_options = [];
-    document.querySelectorAll('.question-checkbox').forEach((checkbox) => {
+    document.querySelectorAll('.question-checkbox').forEach((checkbox, index) => {
       if (checkbox.checked) {
-        check_box_options.push(checkbox.value);
+        let consideration = questions.find(q => q.id === checkbox.id).consideration;
+
+        check_box_options.push(`${index + 1}.${checkbox.value}:（${consideration}）`);
       }
     });
 
-    let selectedOptionsText = check_box_options.join('、'); // ← 日本語の読点で区切る
-    let format_text = '以下のテキスト内容を汲み取って、結合のテストレベルの項目を書いてください。こういう機能があれば、こういう観点のテストが必要なはずだという一般的な観点で書いてください。見落としがちなあるあるネタがあるといいです。例えば、数値を扱う時に0をfalseとして判定していないかなどです。回答はCSV形式で返してください。ヘッダーは  ["テスト項目", "入力条件", "期待する結果"],です。回答は、```csv と ``` で囲んでください。';
-    let final_text = `${format_text} 今回は${side}の観点を重視して回答してください。多くても30項目くらいでお願いします。 以下は、ユーザーが今回のテストについて記載した情報です。以下の情報から推測して書いてください。${response_mail_text} ${selectedOptionsText} また、これはサンプルです。テスト項目,入力条件,期待結果
-一覧取得（正常）,URLパラメータに有効なidを指定してAPIを実行,指定したidに対応するデータが取得できること
-一覧取得（異常：データ未存在）,URLパラメータに存在しないidを指定してAPIを実行,該当データが存在しない場合、例外が発生せず、適切なエラーハンドリング（例：メッセージ表示・null返却）が行われること
-一覧取得（異常：権限なし）,URLパラメータに、参照権限のないidを指定してAPIを実行,アクセス権限チェックが行われ、権限エラー（例：403 Forbidden）が返却されること
-一覧取得（異常：id未指定）,URLパラメータにidが含まれない状態でAPIを実行,リクエストパラメータの不足を検知し、適切なバリデーションエラーが返却されること
-一覧取得（異常：不正形式）,URLパラメータに文字列など不正形式のidを指定,型不正（例：idが数値でない場合）に対して例外が発生せず、400エラーなどが返却されること`;
+    let selectedOptionsText = check_box_options.join('、');
+    let exampleInputs = [];
+    for (let i = 1; i <= 3; i++) {
+      let inputElement = document.getElementById(`example-input${i === 1 ? '' : '-' + i}`);
+      if (inputElement && inputElement.value.trim() !== '') {
+        exampleInputs.push(inputElement.value.trim());
+      }
+    }
     
+    let exampleInputsText = exampleInputs.join('、');
+
+    let format_text = '以下のテキスト内容を汲み取って、単体、結合のテストレベルの項目を書いてください。全体的に異常系を重視して書いてください。こういう機能があれば、こういう観点のテストが必要なはずだという一般的な観点で書いてください。見落としがちなあるあるネタがあるといいです。例えば、数値を扱う時に0をfalseとして判定していないかなどです。回答はCSV形式で返してください。ヘッダーは  ["テスト項目", "入力条件", "期待する結果"],です。回答は、```csv と ``` で囲んでください。';
+    let final_text = `${format_text} 今回は${side}の観点を重視して回答してください。多くても40項目くらいでお願いします。 以下は、ユーザーが今回のテストについて記載した情報です。以下の情報から推測して書いてください。${response_mail_text} また、こちらはこの機能の代表的な正常系のテスト項目を書いてもらいました。${exampleInputsText}。 また以下は、今回テストしたい内容に含まれている機能とその際によくある考慮事項です。${selectedOptionsText}`;   
     try {
       let response_data = await getChatGptResponse(final_text);
       let csv_text = getExtractCsv(response_data);
