@@ -197,7 +197,10 @@ const questions = [
       }
       else {
         resultElement.textContent = response_data;
-        const blob = new Blob([csv_text], { type: 'text/csv;charset=utf-8;' });
+        const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+        const blob = new Blob([bom, csv_text], { type: 'text/csv;charset=utf-8;' });
+
+        //const blob = new Blob([csv_text], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
